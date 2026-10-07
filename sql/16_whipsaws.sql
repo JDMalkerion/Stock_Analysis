@@ -152,7 +152,7 @@ round_trips AS (
         prev_close AS buy_close,
         close_price AS sell_close,
         gap_days,
-        ROUND(100.0 * (close_price - prev_close) / prev_close, 1) AS ret_pct
+        100.0 * (close_price - prev_close) / prev_close AS ret_pct
     FROM ledger
     WHERE prev_signal = 'Buy' AND `signal` = 'Sell'
 )

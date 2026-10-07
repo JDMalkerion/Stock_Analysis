@@ -298,7 +298,7 @@ def run_task10():
     headers = [desc[0] for desc in cursor.description]
 
     # Print nicely formatted table
-    col_widths = [16, 8, 8, 18, 14]
+    col_widths = [16, 8, 8, 8, 18, 14]
     header_str = " | ".join(f"{h:<{w}}" for h, w in zip(headers, col_widths))
     sep_str = "-+-".join("-" * w for w in col_widths)
     print(header_str)
@@ -306,11 +306,13 @@ def run_task10():
     for row in final_rows:
         print(" | ".join(f"{str(val):<{w}}" for val, w in zip(row, col_widths)))
 
-    # Sums of buys and sells across all six stocks
+    # Sums of buys, sells, and holds across all six stocks
     total_buys = sum(row[1] for row in final_rows)
     total_sells = sum(row[2] for row in final_rows)
+    total_holds = sum(row[3] for row in final_rows)
     print(f"\nTotal Buys across all stocks : {total_buys}")
     print(f"Total Sells across all stocks: {total_sells}")
+    print(f"Total Holds across all stocks: {total_holds}")
 
     # Cross-check Bajaj Auto with task 8 and task 7
     print("\n" + "=" * 70)
@@ -320,18 +322,19 @@ def run_task10():
     bajaj2_counts = dict(cursor.fetchall())
     expected_bajaj_buys = bajaj2_counts.get("Buy", 0)
     expected_bajaj_sells = bajaj2_counts.get("Sell", 0)
+    expected_bajaj_holds = bajaj2_counts.get("Hold", 0)
 
     cursor.execute("SELECT date, `signal` FROM bajaj2 WHERE `signal` != 'Hold' ORDER BY date DESC LIMIT 1;")
     bajaj2_last_non_hold = cursor.fetchone()
 
     bajaj_row = next(r for r in final_rows if r[0] == "Bajaj Auto")
-    print(f"Task 10 Bajaj Auto row: stock={bajaj_row[0]}, buys={bajaj_row[1]}, sells={bajaj_row[2]}, last_signal_date={bajaj_row[3]}, last_signal={bajaj_row[4]}")
-    print(f"Task 8 Task/DB counts : Buy={expected_bajaj_buys}, Sell={expected_bajaj_sells}")
+    print(f"Task 10 Bajaj Auto row: stock={bajaj_row[0]}, buys={bajaj_row[1]}, sells={bajaj_row[2]}, holds={bajaj_row[3]}, last_signal_date={bajaj_row[4]}, last_signal={bajaj_row[5]}")
+    print(f"Task 8 Task/DB counts : Buy={expected_bajaj_buys}, Sell={expected_bajaj_sells}, Hold={expected_bajaj_holds}")
     print(f"Task 7 Last non-Hold  : date={bajaj2_last_non_hold[0]}, signal={bajaj2_last_non_hold[1]}")
 
-    match_counts = (bajaj_row[1] == expected_bajaj_buys == 12) and (bajaj_row[2] == expected_bajaj_sells == 11)
-    match_last_sig = (bajaj_row[3] == bajaj2_last_non_hold[0]) and (bajaj_row[4] == bajaj2_last_non_hold[1])
-    print(f"Cross-check buys/sells match: {'PASS' if match_counts else 'FAIL'}")
+    match_counts = (bajaj_row[1] == expected_bajaj_buys == 12) and (bajaj_row[2] == expected_bajaj_sells == 11) and (bajaj_row[3] == expected_bajaj_holds == 866)
+    match_last_sig = (bajaj_row[4] == bajaj2_last_non_hold[0]) and (bajaj_row[5] == bajaj2_last_non_hold[1])
+    print(f"Cross-check buys/sells/holds match: {'PASS' if match_counts else 'FAIL'}")
     print(f"Cross-check last signal match: {'PASS' if match_last_sig else 'FAIL'}")
 
     # Query with ROUND(..., 2)
@@ -406,6 +409,7 @@ def run_task10():
         s.stock,
         SUM(CASE WHEN s.`signal` = 'Buy' THEN 1 ELSE 0 END) AS buys,
         SUM(CASE WHEN s.`signal` = 'Sell' THEN 1 ELSE 0 END) AS sells,
+        SUM(CASE WHEN s.`signal` = 'Hold' THEN 1 ELSE 0 END) AS holds,
         l.last_signal_date,
         l.last_signal
     FROM sig s

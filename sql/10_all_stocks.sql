@@ -65,6 +65,7 @@ SELECT
     s.stock,
     SUM(CASE WHEN s.`signal` = 'Buy' THEN 1 ELSE 0 END) AS buys,
     SUM(CASE WHEN s.`signal` = 'Sell' THEN 1 ELSE 0 END) AS sells,
+    SUM(CASE WHEN s.`signal` = 'Hold' THEN 1 ELSE 0 END) AS holds,
     l.last_signal_date,
     l.last_signal
 FROM sig s

@@ -24,7 +24,7 @@ moves AS (
         stock,
         date,
         close_price,
-        ROUND(100.0 * (close_price / prev_close - 1), 1) AS pct_move
+        100.0 * (close_price / prev_close - 1) AS pct_move
     FROM daily
     WHERE prev_close IS NOT NULL
 ),
@@ -41,7 +41,7 @@ SELECT
     stock,
     date,
     close_price,
-    pct_move
+    ROUND(pct_move, 1) AS pct_move
 FROM ranked
 WHERE rn = 1
 ORDER BY pct_move ASC;
