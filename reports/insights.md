@@ -15,7 +15,7 @@ Five headline findings (each links to its section):
 - **Whipsaw signals were common.** 34 consecutive signal pairs were 30 calendar days apart or fewer. Of the 11 round trips that also fell within that window, 10 lost money. → [Whipsaws](#5-whipsaws)
 
 - **The simple moving-average rule has a structural lag.** The first crossover signal cannot arrive before 50 trading days of data have accumulated; the rule cannot warn of events that happened before that threshold. → [Method questions](#6-method-questions)
-
+    
 ---
 ## 2. Data and Method
 
